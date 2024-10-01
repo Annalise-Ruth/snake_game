@@ -56,6 +56,12 @@ def next_turn(snake, food):
 
     snake.squares.insert(0, square)
 
+    del snake.coordinates[-1]
+
+    game_canvas.delete(snake.squares[-1])
+
+    del snake.squares[-1]
+
     window.after (speed, next_turn, snake, food)
 
     
