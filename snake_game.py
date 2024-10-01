@@ -1,4 +1,4 @@
-from _tkinter import *
+from tkinter import *
 import random
 
 #Constants/Game Settings
@@ -29,3 +29,10 @@ def check_collisions():
 
 def game_over():
     pass
+
+
+window = Tk()
+window.title("Snake game")
+window.resizable(False, False)
+
+window.mainloop ()
