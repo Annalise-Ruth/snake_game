@@ -41,6 +41,8 @@ direction = 'down'
 score_label = Label(window, text="Score:{}".format(score), font=('consolas', 40))
 score_label.pack()
 
+game_canvas = Canvas(window, bg=background_color, height=game_height, width=game_width)
+game_canvas.pack()
 
 
 window.mainloop ()
