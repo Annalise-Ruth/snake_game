@@ -26,7 +26,6 @@ class Snake:
             square = game_canvas.create_rectangle(x_axis, y_axis, x_axis + space_size, y_axis + space_size, fill=snake_color, tags="snake")
             self.squares.append(square)
 
-
 class Food:
 
     def __init__(self):
@@ -78,11 +77,11 @@ def next_turn(snake, food):
     if check_collisions(snake):
         game_over()
 
-    
+
     else:
         window.after (speed, next_turn, snake, food)
+   
 
-    
 def change_direction(new_direction):
     
     global direction
