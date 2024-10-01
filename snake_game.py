@@ -30,9 +30,17 @@ def check_collisions():
 def game_over():
     pass
 
-
+#Window Settings
 window = Tk()
 window.title("Snake game")
 window.resizable(False, False)
+
+score = 0 
+direction = 'down'
+
+score_label = Label(window, text="Score:{}".format(score), font=('consolas', 40))
+score_label.pack()
+
+
 
 window.mainloop ()
