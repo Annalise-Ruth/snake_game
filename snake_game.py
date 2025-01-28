@@ -3,7 +3,7 @@ import random
 
 # Constants
 GAME_WIDTH = 1000
-GAME_HEIGHT = 700
+GAME_HEIGHT = 600
 SPACE_SIZE = 50
 BODY_PARTS = 3
 SNAKE_COLOR = "#9FDDA4"
@@ -16,7 +16,7 @@ is_paused = False
 game_started = False
 score = 0
 direction = 'down'
-SPEED = 100  # Default speed (Medium)
+SPEED = 100  
 
 # Snake class
 class Snake:
@@ -52,17 +52,7 @@ def toggle_pause():
         is_paused = True
         if game_loop_id:
             window.after_cancel(game_loop_id)
-        show_resume_popup()
-
-# Show pop up
-def show_resume_popup():
-    popup = Toplevel(window)
-    popup.title("Game Paused")
-    popup.geometry("200x100")
-    popup.configure(bg="#9FDDA4")
-
-    resume_button = Button(popup, text="Resume", font=('consolas', 20), command=lambda: resume_game(popup))
-    resume_button.pack(pady=20)
+        # No resume popup anymore, game just pauses here
 
 def start_game():
     global game_started, score, direction, snake, food
@@ -92,12 +82,6 @@ def restart_game():
         snake = Snake()
         food = Food()
         game_loop_id = window.after(SPEED, next_turn, snake, food)
-
-def resume_game(popup):
-    global is_paused, game_loop_id
-    is_paused = False
-    popup.destroy()
-    game_loop_id = window.after(SPEED, next_turn, snake, food)
 
 # Direction and Collisions
 def next_turn(snake, food):
@@ -175,7 +159,7 @@ def game_over():
     canvas.create_text(canvas.winfo_width()/2, canvas.winfo_height()/2, font=('consolas',70), text="GAME OVER", fill="#E0889F", tag="gameover")
     show_difficulty_popup()
 
-# Set difficulty levels (Easy, Medium, Hard)
+# Set difficulty levels
 def set_difficulty(level):
     global SPEED
     if level == 'Easy':
@@ -185,7 +169,6 @@ def set_difficulty(level):
     elif level == 'Hard':
         SPEED = 50
 
-    # Close the difficulty pop-up and start the game
     difficulty_popup.destroy()
     open_game_window()
 
@@ -206,11 +189,11 @@ def open_game_window():
     label.pack()
 
     # Pause/Resume Button
-    pause_button = Button(window, text="Pause or Resume", command=toggle_pause, font=('consolas', 20))
+    pause_button = Button(window, text="Pause", command=toggle_pause, font=('consolas', 20))
     pause_button.pack(pady=10)
 
     # Start/Restart Button
-    start_button = Button(window, text="Start/Restart", command=restart_game, font=('consolas', 20))
+    start_button = Button(window, text="Restart", command=restart_game, font=('consolas', 20))
     start_button.pack(pady=10)
 
     # Game Canvas
@@ -241,15 +224,15 @@ def open_game_window():
 
     window.mainloop()
 
-# Difficulty selection pop-up (This is the first thing that appears)
+# Difficulty selection pop-up 
 def show_difficulty_popup():
     global difficulty_popup
     difficulty_popup = Toplevel(window)
     difficulty_popup.title("Select Difficulty")
     difficulty_popup.geometry("400x300")
-    difficulty_popup.configure(bg=BACKGROUND_COLOR)
+    difficulty_popup.configure(bg=FOOD_COLOR)
 
-    # Create difficulty selection buttons
+    # Difficulty selection buttons
     easy_button = Button(difficulty_popup, text="Easy", command=lambda: set_difficulty('Easy'), font=('consolas', 20))
     easy_button.pack(pady=20)
 
