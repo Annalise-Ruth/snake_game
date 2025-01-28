@@ -4,7 +4,6 @@ import random
 #Constants
 GAME_WIDTH = 1000
 GAME_HEIGHT = 700
-SPEED = 100
 SPACE_SIZE = 50
 BODY_PARTS = 3
 SNAKE_COLOR = "#9FDDA4"
@@ -17,6 +16,9 @@ is_paused = False
 game_started = False
 score = 0
 direction = 'down'
+snake = None
+food = None
+SPEED = 100
 
 #Snake class
 class Snake:
@@ -63,7 +65,7 @@ def show_resume_popup():
     popup = Toplevel(window)
     popup.title("Game Paused")
     popup.geometry("200x100")
-    popup.configure(bg = BACKGROUND_COLOR)
+    popup.configure(bg = "#9FDDA4")
 
     resume_button = Button(popup, text="Resume", font=('consolas', 20), command=lambda: resume_game(popup))
     resume_button.pack(pady=20)
@@ -74,9 +76,11 @@ def start_game():
     score = 0
     direction = 'down'
     label.config(text="Score:{}".format(score))
-    canvas.delete("snake")
-    canvas.delete("food")
-    canvas.delete("gameover")
+
+    canvas.delete("snake")  
+    canvas.delete("food")   
+    canvas.delete("gameover")  
+
     snake = Snake()
     food = Food()
     game_loop_id = window.after(SPEED, next_turn, snake, food)
@@ -84,18 +88,21 @@ def start_game():
 # Function to restart the game
 def restart_game():
     global score, direction, is_paused, game_started
-    if not game_started:
-        start_game()
-    else:
+    if game_started:
         score = 0
         direction = 'down'
         label.config(text="Score:{}".format(score))
+
         canvas.delete("snake")
         canvas.delete("food")
         canvas.delete("gameover")
+
         snake = Snake()
         food = Food()
+
         game_loop_id = window.after(SPEED, next_turn, snake, food)
+    else:
+        start_game()
 
 def resume_game(popup):
     global is_paused, game_loop_id
@@ -193,50 +200,84 @@ def game_over():
    canvas.delete(ALL)
    canvas.create_text(canvas.winfo_width()/2, canvas.winfo_height()/2, font=('consolas',70), text="GAME OVER", fill="#E0889F", tag="gameover")
 
-#Initialize the GUI
-window = Tk()
-window.title("Snake Game")
-window.resizable(False, False)
+#Difficulty Levels
+def set_difficulty(level):
+    global SPEED
+    if level == 'Easy':
+        SPEED = 150
+    elif level== 'Medium':
+        SPEED = 100
+    elif level == 'Hard':
+        SPEED = 50
 
-score = 0
-direction = 'down'
-is_paused = False
+    difficulty_popup.destroy()
+    open_game_window()
 
-label = Label(window, text="Score:{}".format(score), font=('consolas', 40))
-label.pack()
+def open_game_window():
+    global window, label, canvas, snake, food
 
-#Pause/Resume Button
-pause_button = Button(window, text = "Pause or Resume", command = toggle_pause, font =('consolas', 20))
-pause_button.pack(pady=10)
+    #Initialize the GUI
+    window = Tk()
+    window.title("Snake Game")
+    window.resizable(False, False)
 
-#Start/Restart Button
-start_button = Button(window, text="Start/Restart", command=restart_game, font=('consolas', 20))
-start_button.pack(pady=10)
+    score = 0
+    direction = 'down'
+    is_paused = False
 
-#Game Canvas
-canvas = Canvas(window, bg=BACKGROUND_COLOR, height=GAME_HEIGHT, width=GAME_WIDTH)
-canvas.pack()
+    label = Label(window, text="Score:{}".format(score), font=('consolas', 40))
+    label.pack()
 
-window.update()
+    #Pause/Resume Button
+    pause_button = Button(window, text = "Pause or Resume", command = toggle_pause, font =('consolas', 20))
+    pause_button.pack(pady=10)
 
-window_width = window.winfo_width()
-window_height = window.winfo_height()
-screen_width = window.winfo_screenwidth()
-screen_height = window.winfo_screenheight()
+    #Start/Restart Button
+    start_button = Button(window, text="Restart", command=restart_game, font=('consolas', 20))
+    start_button.pack(pady=10)
 
-x_axis = int((screen_width/2) - (window_width/2))
-y_axis = int((screen_height/2) - (window_height/2))
+    #Game Canvas
+    canvas = Canvas(window, bg=BACKGROUND_COLOR, height=GAME_HEIGHT, width=GAME_WIDTH)
+    canvas.pack()
 
-window.geometry(f"{window_width}x{window_height}+{x_axis}+{y_axis}")
+    window.update()
 
-window.bind('<Left>', lambda event: change_direction('left'))
-window.bind('<Right>', lambda event: change_direction('right'))
-window.bind('<Up>', lambda event: change_direction('up'))
-window.bind('<Down>', lambda event: change_direction('down'))
+    window_width = window.winfo_width()
+    window_height = window.winfo_height()
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
 
-#Start the game Loop
-snake = Snake()
-food = Food()
-next_turn(snake, food)
+    x_axis = int((screen_width/2) - (window_width/2))
+    y_axis = int((screen_height/2) - (window_height/2))
 
-window.mainloop()
+    window.geometry(f"{window_width}x{window_height}+{x_axis}+{y_axis}")
+
+    window.bind('<Left>', lambda event: change_direction('left'))
+    window.bind('<Right>', lambda event: change_direction('right'))
+    window.bind('<Up>', lambda event: change_direction('up'))
+    window.bind('<Down>', lambda event: change_direction('down'))
+
+    #Start the game Loop
+    snake = Snake()
+    food = Food()
+    next_turn(snake, food)
+
+    window.mainloop()
+
+#Difficulty selection pop-up
+difficulty_popup = Tk()
+difficulty_popup.title("Select Difficulty")
+difficulty_popup.geometry("400x300")
+difficulty_popup.configure(bg=BACKGROUND_COLOR)
+
+easy_button = Button(difficulty_popup, text="Easy", command=lambda: set_difficulty('Easy'), font=('consolas', 20))
+easy_button.pack(pady=20)
+
+medium_button = Button(difficulty_popup, text="Medium", command=lambda: set_difficulty('Medium'), font=('consolas', 20))
+medium_button.pack(pady=20)
+
+hard_button = Button(difficulty_popup, text="Hard", command=lambda: set_difficulty('Hard'), font=('consolas', 20))
+hard_button.pack(pady=20)
+
+difficulty_popup.mainloop()
+
